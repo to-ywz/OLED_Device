@@ -559,7 +559,6 @@ int GetX(void);
  */
 TypeXY GetXY(void);
 
-
 /** 
  * @brief               设置旋转中心点
  * 
@@ -651,6 +650,22 @@ void TempBufferFunc(int func);
  */
 unsigned char FrameRateUpdateScreen(int value);
 
+// DMA 模式专用
+/**
+ * @brief   锁上 缓冲区域
+ * 
+ */
+void lockedBuffer(void);
+/**
+ * @brief   解锁缓冲区
+ * 
+ */
+void unlockBuffer(void);
+/**
+ * @brief DMA 回调函数
+ * 
+ */
+void DMATransmitCallback(void);
 //////////////////////////////////////////////////////////////////////////////////////
 // * 调试使用
 /**

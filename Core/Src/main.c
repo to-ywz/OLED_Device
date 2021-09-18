@@ -112,13 +112,14 @@ int main(void)
   // UpdateScreen();
   // DrawString(0, 0, " ");
   // HAL_Delay(1000);
+  // while (!(DMA1->HISR & DMA_HISR_TCIF6))
+  //   ;
   ShowChinese(0, 0, "一只程序羊");
 
   ShowChinese(1, 4, "求打赏");
 
   SetFontSize(0);
   DrawString(6, 6 * 8, "blacksheep");
- 
 
   // HAL_Delay(5000);
   // OLED_CLS();
@@ -127,11 +128,11 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
- UpdateScreen();
+  //UpdateScreen();
   while (1)
   {
     //OLED_CLS();
-    // FrameRateUpdateScreen(20);
+
     HAL_GPIO_TogglePin(LED_B_GPIO_Port, LED_B_Pin);
     HAL_Delay(500);
     /* USER CODE END WHILE */

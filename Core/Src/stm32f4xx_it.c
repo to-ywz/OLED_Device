@@ -62,7 +62,7 @@ extern I2C_HandleTypeDef hi2c1;
 extern UART_HandleTypeDef huart2;
 extern UART_HandleTypeDef huart6;
 /* USER CODE BEGIN EV */
-unsigned char DMA_Finish;
+
 /* USER CODE END EV */
 
 /******************************************************************************/
@@ -193,6 +193,14 @@ void SysTick_Handler(void)
   HAL_IncTick();
   /* USER CODE BEGIN SysTick_IRQn 1 */
   OledTimeMsFunc();
+  // if (!DMA1->HISR & DMA_HISR_TCIF6)
+  // {
+  //   unlockBuffer();
+  // }
+  // else
+  // {
+  //   lockedBuffer();
+  // }
   /* USER CODE END SysTick_IRQn 1 */
 }
 
@@ -202,18 +210,18 @@ void SysTick_Handler(void)
 /* For the available peripheral interrupt handler names,                      */
 /* please refer to the startup file (startup_stm32f4xx.s).                    */
 /******************************************************************************/
-
+extern unsigned char DMA_Finish;
 /**
   * @brief This function handles DMA1 stream6 global interrupt.
   */
 void DMA1_Stream6_IRQHandler(void)
 {
   /* USER CODE BEGIN DMA1_Stream6_IRQn 0 */
-  DMA_Finish = 0;
+  DMATransmitCallback();
   /* USER CODE END DMA1_Stream6_IRQn 0 */
   HAL_DMA_IRQHandler(&hdma_i2c1_tx);
   /* USER CODE BEGIN DMA1_Stream6_IRQn 1 */
-  DMA_Finish = 1;
+
   /* USER CODE END DMA1_Stream6_IRQn 1 */
 }
 

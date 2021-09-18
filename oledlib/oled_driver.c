@@ -29,15 +29,15 @@ uint8_t OLED_Init_CMD[] =
 	 0xa1, 0xa6, 0xa8, 0x3F, 0xa4, 0xd3, 0x00, 0xd5, 0xf0, 0xd9,
 	 0x22, 0xda, 0x12, 0xdb, 0x20, 0x8d, 0x14, 0xaf};
 
-#if (TRANSFER_METHOD == HW_IIC) || (TRANSFER_METHOD == HW_IIC_DMA) //1.硬件IIC
+#if (TRANSFER_METHOD == HW_IIC) //1.硬件IIC
 
 //...
 extern unsigned char ScreenBuffer[SCREEN_PAGE_NUM][SCREEN_COLUMN];
 
 //...
 
-extern I2C_HandleTypeDef hi2c1;
 extern DMA_HandleTypeDef hdma_i2c1_tx;
+extern I2C_HandleTypeDef hi2c1;
 
 //I2C_Configuration，初始化硬件IIC引脚, 废弃
 // ! 建议在 STM32CubeMX中直接配置
@@ -74,7 +74,7 @@ void I2C_Configuration(void)
 	{
 		Error_Handler();
 	}
-#if (TRANSFER_METHOD == HW_IIC_DMA)
+#if (USING_DMA)
 	// DMA TX 初始化
 	hdma_i2c1_tx.Instance = DMA1_Stream6;
 	hdma_i2c1_tx.Init.Channel = DMA_CHANNEL_1;
@@ -98,7 +98,8 @@ void I2C_Configuration(void)
 	HAL_NVIC_EnableIRQ(I2C1_EV_IRQn);
 }
 
-#if (TRANSFER_METHOD == HW_IIC_DMA)
+#if USING_DMA
+
 static void DMA_WriteCmd(uint8_t *buf, int len)
 {
 	HAL_I2C_Mem_Write_DMA(HWI2Cx_12864, OLED_ADDRESS, OLED_WriteCom_Addr, I2C_MEMADD_SIZE_8BIT, buf, len);
@@ -235,7 +236,7 @@ void IIC_Stop(void)
 	IIC_SDA = 1;
 }
 
-#elif (TRANSFER_METHOD == HW_SPI) || (TRANSFER_METHOD == HW_SPI_DMA) //3.硬件SPI
+#elif (TRANSFER_METHOD == HW_SPI) //3.硬件SPI
 
 #define OLED_RESET_LOW() GPIO_ResetBits(SPI_RES_GPIOX, SPI_RES_PIN) //低电平复位
 #define OLED_RESET_HIGH() GPIO_SetBits(SPI_RES_GPIOX, SPI_RES_PIN)
@@ -390,7 +391,7 @@ void WriteDat(unsigned char dat)
 void OLED_Init(void)
 {
 	int length = sizeof(OLED_Init_CMD) / sizeof(OLED_Init_CMD[0]);
-#if (TRANSFER_METHOD == HW_SPI_DMA) || (TRANSFER_METHOD == HW_IIC_DMA)
+#if USING_DMA
 	DMA_WriteCmd(OLED_Init_CMD, length);
 #else
 	WriteCmd(OLED_Init_CMD, length);
@@ -437,7 +438,7 @@ void OLED_CLS(void) //清屏
 			ScreenBuffer[m][n] = 0;
 		}
 	}
-#if (TRANSFER_METHOD == HW_SPI_DMA) || (TRANSFER_METHOD == HW_IIC_DMA)
+#if USING_DMA
 	DMA_WriteDat(ScreenBuffer[0], 1024);
 #else
 	WriteDat(ScreenBuffer[0], 1024);
@@ -447,7 +448,7 @@ void OLED_CLS(void) //清屏
 void OLED_ON(void)
 {
 	uint8_t buf[] = {0x8d, 0x14, 0xaf};
-#if (TRANSFER_METHOD == HW_SPI_DMA) || (TRANSFER_METHOD == HW_IIC_DMA)
+#if USING_DMA
 	DMA_WriteCmd(buf, sizeof(buf));
 #else
 	WriteCmd(buf, sizeof(buf));
@@ -457,8 +458,7 @@ void OLED_ON(void)
 void OLED_OFF(void)
 {
 	uint8_t buf[] = {0x8d, 0x10, 0xae};
-#if (TRANSFER_METHOD == HW_SPI_DMA) || (TRANSFER_METHOD == HW_IIC_DMA)
-
+#if USING_DMA
 	DMA_WriteCmd(buf, sizeof(buf));
 #else
 	WriteCmd(buf, sizeof(buf));
@@ -468,8 +468,7 @@ void OLED_OFF(void)
 
 void OLED_FILL(unsigned char BMP[])
 {
-#if (TRANSFER_METHOD == HW_SPI_DMA) || (TRANSFER_METHOD == HW_IIC_DMA)
-
+#if USING_DMA
 	// * DMA
 	DMA_WriteDat(BMP, 1024);
 
@@ -477,3 +476,29 @@ void OLED_FILL(unsigned char BMP[])
 	WriteDat(BMP, 1024);
 #endif
 }
+
+#if USING_DMA
+unsigned char DMA_Finish = 0; // DMA 状态
+
+void lockedBuffer(void)
+{
+	DMA_Finish = 1;
+}
+
+void unlockBuffer(void)
+{
+	DMA_Finish = 0;
+}
+
+unsigned char getBufferState(void)
+{
+	return DMA_Finish;
+}
+void DMATransmitCallback(void)
+{
+	if (IIC_DMA->HISR & IIC_DMA_TCIF)
+	{
+		unlockBuffer();
+	}
+}
+#endif

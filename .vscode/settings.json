@@ -14,6 +14,7 @@
         "string.h": "c",
         "i2c.h": "c",
         "oled_buffer.h": "c",
-        "oled_config.h": "c"
+        "oled_config.h": "c",
+        "oled_driver.h": "c"
     }
 }

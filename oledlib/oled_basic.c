@@ -44,6 +44,7 @@ void ClearScreen(void)
 //更新屏幕 注意此处特指刷新屏幕数组而不是临时数组
 void UpdateScreen(void)
 {
+	lockedBuffer();
 	UpdateScreenDisplay();
 }
 

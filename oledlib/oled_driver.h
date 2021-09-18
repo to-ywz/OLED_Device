@@ -5,7 +5,7 @@
 #include "oled_basic.h"
 
 
-#if (TRANSFER_METHOD == HW_IIC) || (TRANSFER_METHOD == HW_IIC_DMA)
+#if (TRANSFER_METHOD == HW_IIC) 
 #define OLED_WriteData_Addr	0x40
 #define OLED_WriteCom_Addr	0x00	
 
@@ -19,6 +19,11 @@
 		#define IIC_SDA_PIN_X               GPIO_PIN_7
 		#define I2CX                        I2C1
 		#define HWI2Cx_12864 				&hi2c1
+		
+		#if USING_DMA	
+			#define IIC_DMA 				DMA1
+			#define IIC_DMA_TCIF			DMA_HISR_TCIF6
+		#endif
 
 	#elif (USE_HW_IIC == IIC_2)
 		#define IIC_I2C_ENABLE()     		__HAL_RCC_I2C2_CLK_ENABLE();
@@ -105,6 +110,7 @@ void OLED_CLS(void);
 void OLED_ON(void);
 void OLED_OFF(void);
 void OLED_FILL(unsigned char BMP[]);
+
 
 #endif //__OLED_DRIVER_H
 

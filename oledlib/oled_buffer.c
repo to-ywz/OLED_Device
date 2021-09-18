@@ -21,7 +21,6 @@
 #include "string.h"
 
 //定义缓冲 屏幕缓冲区和临时缓冲区
-extern unsigned char DMA_Finish;
 unsigned char ScreenBuffer[SCREEN_PAGE_NUM][SCREEN_COLUMN] = {0}; //屏幕缓冲
 unsigned char TempBuffer[SCREEN_PAGE_NUM][SCREEN_COLUMN] = {0};	  //临时操作缓冲
 static _Bool _SelectedBuffer = SCREEN_BUFFER;					  //当前选择的缓冲区
@@ -118,8 +117,10 @@ unsigned char ReadByteBuffer(int page, int x)
 //写入读取选择的缓冲区8位数据
 void WriteByteBuffer(int page, int x, unsigned char byte)
 {
-	while (!DMA_Finish)
+#if USING_DMA
+	while (getBufferState())
 		;
+#endif
 
 	if (_SelectedBuffer)
 	{

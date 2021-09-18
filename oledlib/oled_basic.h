@@ -24,12 +24,11 @@ typedef struct ROATE
 	(y) = (y) - (x);
 
 #define HW_IIC    	(0)
-#define HW_IIC_DMA	(1)
-#define SW_IIC    	(2)
-#define HW_SPI		(3)
-#define HW_SPI_DMA	(4)
-#define SW_SPI		(5)
-#define HW_8080   	(6)
+#define SW_IIC    	(1)
+#define HW_SPI		(2)
+#define SW_SPI		(3)
+
+#define USING_DMA	(1)
 
 #define IIC_1     (10)
 #define IIC_2     (11)
@@ -60,5 +59,9 @@ unsigned char pgm_read_byte(const unsigned char * addr);
 unsigned int oled_pow(unsigned char m,unsigned char n);
 unsigned char FrameRateUpdateScreen(int value);
 void WaitTimeMs(unsigned int time);
+void lockedBuffer(void);
+void DMATransmitCallback(void);
+unsigned char getBufferState(void);
+
 #endif
 
