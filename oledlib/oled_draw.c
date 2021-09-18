@@ -1235,17 +1235,6 @@ void OLED_ShowCHinese(uint8_t x, uint8_t y, uint8_t *cn)
 }
 
 /**
- * @brief 			显示中文, 默认从第一行开始
- * 
- * @param[in] str 	中文
- * @param[in] len 	字符串长度
- * 
- * @note			汉字需要使用PCtoLCD2002生成, 并添加到 oled_font.c文件中
- * !				字模大小为 16,所以
- * 					x 值为 0~3,
- * 					y 值为 0~7
- */
-/**
  * @brief 
  * 
  * @param[in] x, y	显示字符需要所在的坐标对 	

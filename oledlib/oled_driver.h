@@ -97,8 +97,8 @@
 #endif
 
 
-void WriteCmd(unsigned char cmd);
-void WriteDat(unsigned char Dat);
+void WriteCmd(unsigned char *cmd, int len);
+void WriteDat(unsigned char *dat, int len);
 
 void OLED_Init(void);
 void OLED_CLS(void);

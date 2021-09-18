@@ -12,6 +12,8 @@
         "usart.h": "c",
         "stdio.h": "c",
         "string.h": "c",
-        "i2c.h": "c"
+        "i2c.h": "c",
+        "oled_buffer.h": "c",
+        "oled_config.h": "c"
     }
 }

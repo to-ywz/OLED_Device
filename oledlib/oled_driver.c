@@ -39,7 +39,7 @@ extern unsigned char ScreenBuffer[SCREEN_PAGE_NUM][SCREEN_COLUMN];
 extern I2C_HandleTypeDef hi2c1;
 extern DMA_HandleTypeDef hdma_i2c1_tx;
 
-//I2C_Configuration，初始化硬件IIC引脚
+//I2C_Configuration，初始化硬件IIC引脚, 废弃
 // ! 建议在 STM32CubeMX中直接配置
 void I2C_Configuration(void)
 {
@@ -98,9 +98,21 @@ void I2C_Configuration(void)
 	HAL_NVIC_EnableIRQ(I2C1_EV_IRQn);
 }
 
-#if (TRANSFER_METHOD == HW_IIC)
+#if (TRANSFER_METHOD == HW_IIC_DMA)
+static void DMA_WriteCmd(uint8_t *buf, int len)
+{
+	HAL_I2C_Mem_Write_DMA(HWI2Cx_12864, OLED_ADDRESS, OLED_WriteCom_Addr, I2C_MEMADD_SIZE_8BIT, buf, len);
+}
+static void DMA_WriteDat(uint8_t *buf, int len)
+{
+	HAL_I2C_Mem_Write_DMA(HWI2Cx_12864, OLED_ADDRESS, OLED_WriteData_Addr, I2C_MEMADD_SIZE_8BIT, buf, len);
+}
+
+#else
 /**
- * @brief 		2C_WriteByte，向OLED寄存器地址写一个byte的数据
+ * @brief 		I2C_WriteByte，向OLED寄存器地址写一个byte的数据
+ * 				如果不使用 HAL 库, 或自行写 I2C 的发送 函数
+ * 				则再此重写发送函数
  * 
  * @param addr 	寄存器地址
  * @param data 	要写入的数据
@@ -109,46 +121,24 @@ void I2C_Configuration(void)
  */
 void I2C_WriteByte(uint8_t addr, uint8_t data)
 {
-	while (I2C_GetFlagStatus(I2CX, I2C_FLAG_BUSY))
-		;
-
-	I2C_GenerateSTART(I2CX, ENABLE); //开启I2C1
-	while (!I2C_CheckEvent(I2CX, I2C_EVENT_MASTER_MODE_SELECT))
-		; /*EV5,主模式*/
-
-	I2C_Send7bitAddress(I2CX, OLED_ADDRESS, I2C_Direction_Transmitter); //器件地址 -- 默认0x78
-	while (!I2C_CheckEvent(I2CX, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED))
-		;
-
-	I2C_SendData(I2CX, addr); //寄存器地址
-	while (!I2C_CheckEvent(I2CX, I2C_EVENT_MASTER_BYTE_TRANSMITTED))
-		;
-
-	I2C_SendData(I2CX, data); //发送数据
-	while (!I2C_CheckEvent(I2CX, I2C_EVENT_MASTER_BYTE_TRANSMITTED))
-		;
-
-	I2C_GenerateSTOP(I2CX, ENABLE); //关闭I2C1总线
 }
 
-void WriteCmd(unsigned char cmd) //写命令
+void WriteCmd(unsigned char *cmd, int len) //写命令
 {
-	I2C_WriteByte(0x00, cmd);
-}
-
-void WriteDat(unsigned char dat) //写数据
-{
-	I2C_WriteByte(0x40, dat);
-}
+#if USING_DMA
+	HAL_I2C_Mem_Write_DMA(HWI2Cx_12864, OLED_ADDRESS, OLED_WriteCom_Addr, I2C_MEMADD_SIZE_8BIT, cmd, len);
 #else
-
-static void DMA_WriteCmd(uint8_t *buf, int len)
-{
-	HAL_I2C_Mem_Write_DMA(HWI2Cx_12864, OLED_ADDRESS, OLED_WriteCom_Addr, I2C_MEMADD_SIZE_8BIT, buf, len);
+	HAL_I2C_Mem_Write(HWI2Cx_12864, OLED_ADDRESS, OLED_WriteCom_Addr, I2C_MEMADD_SIZE_8BIT, cmd, len, 1000);
+#endif
 }
-static void DMA_WriteDat(uint8_t *buf, int len)
+
+void WriteDat(unsigned char *dat, int len) //写数据
 {
+#if USING_DMA
 	HAL_I2C_Mem_Write_DMA(HWI2Cx_12864, OLED_ADDRESS, OLED_WriteData_Addr, I2C_MEMADD_SIZE_8BIT, buf, len);
+#else
+	HAL_I2C_Mem_Write(HWI2Cx_12864, OLED_ADDRESS, OLED_WriteData_Addr, I2C_MEMADD_SIZE_8BIT, dat, len, 1000);
+#endif
 }
 #endif
 
@@ -403,10 +393,8 @@ void OLED_Init(void)
 #if (TRANSFER_METHOD == HW_SPI_DMA) || (TRANSFER_METHOD == HW_IIC_DMA)
 	DMA_WriteCmd(OLED_Init_CMD, length);
 #else
-	for (uint16_t i = 0; i < ; i++)
-	{
-		WriteCmd(OLED_Init_CMD[i]);
-	}
+	WriteCmd(OLED_Init_CMD, length);
+
 	// WriteCmd(0xAE); //display off
 	// WriteCmd(0x20); //Set Memory Addressing Mode
 	// WriteCmd(0x10); //00,Horizontal Addressing Mode;01,Vertical Addressing Mode;10,Page Addressing Mode (RESET);11,Invalid
@@ -442,7 +430,6 @@ void OLED_Init(void)
 void OLED_CLS(void) //清屏
 {
 	unsigned char m, n;
-#if (TRANSFER_METHOD == HW_SPI_DMA) || (TRANSFER_METHOD == HW_IIC_DMA)
 	for (m = 0; m < SCREEN_PAGE_NUM; m++)
 	{
 		for (n = 0; n < SCREEN_COLUMN; n++)
@@ -450,43 +437,32 @@ void OLED_CLS(void) //清屏
 			ScreenBuffer[m][n] = 0;
 		}
 	}
+#if (TRANSFER_METHOD == HW_SPI_DMA) || (TRANSFER_METHOD == HW_IIC_DMA)
 	DMA_WriteDat(ScreenBuffer[0], 1024);
 #else
-	for (m = 0; m < 8; m++)
-	{
-		WriteCmd(0xb0 + m); //page0-page1
-		WriteCmd(0x00);		//low column start address
-		WriteCmd(0x10);		//high column start address
-		for (n = 0; n < 128; n++)
-		{
-			WriteDat(0x00);
-		}
-	}
+	WriteDat(ScreenBuffer[0], 1024);
 #endif
 }
 
 void OLED_ON(void)
 {
-#if (TRANSFER_METHOD == HW_SPI_DMA) || (TRANSFER_METHOD == HW_IIC_DMA)
 	uint8_t buf[] = {0x8d, 0x14, 0xaf};
+#if (TRANSFER_METHOD == HW_SPI_DMA) || (TRANSFER_METHOD == HW_IIC_DMA)
 	DMA_WriteCmd(buf, sizeof(buf));
 #else
-	WriteCmd(0X8D); //设置电荷泵
-	WriteCmd(0X14); //开启电荷泵
-	WriteCmd(0XAF); //OLED唤醒
+	WriteCmd(buf, sizeof(buf));
 #endif
 }
 
 void OLED_OFF(void)
 {
-#if (TRANSFER_METHOD == HW_SPI_DMA) || (TRANSFER_METHOD == HW_IIC_DMA)
 	uint8_t buf[] = {0x8d, 0x10, 0xae};
+#if (TRANSFER_METHOD == HW_SPI_DMA) || (TRANSFER_METHOD == HW_IIC_DMA)
 
 	DMA_WriteCmd(buf, sizeof(buf));
 #else
-	WriteCmd(0X8D); //设置电荷泵
-	WriteCmd(0X10); //关闭电荷泵
-	WriteCmd(0XAE); //OLED休眠
+	WriteCmd(buf, sizeof(buf));
+
 #endif
 }
 
@@ -498,20 +474,6 @@ void OLED_FILL(unsigned char BMP[])
 	DMA_WriteDat(BMP, 1024);
 
 #else
-	uint8_t i, j;
-	unsigned char *p;
-	p = BMP;
-
-	for (i = 0; i < 8; i++)
-	{
-		WriteCmd(0xb0 + i); //page0-page1
-		WriteCmd(0x00);		//low column start address
-		WriteCmd(0x10);
-
-		for (j = 0; j < 128; j++)
-		{
-			WriteDat(*p++);
-		}
-	}
+	WriteDat(BMP, 1024);
 #endif
 }

@@ -37,7 +37,7 @@ Type_textbk GetTextBkMode(void)
 //尺寸有 0 1 2 3
 //对应像素是 0 8 16 24
 //0是默认字体 		也就是F8X16[]		大小8x16
-//1是原作者字体 	也就是font5x7[]		大小6x8
+//1是原字体 	    也就是font5x7[]		大小6x8
 //2是1的2倍放大							大小12x16
 //3是1的3倍放大							大小18x24
 void SetFontSize(unsigned char value)
