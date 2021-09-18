@@ -1,0 +1,118 @@
+<mxfile host="65bd71144e">
+    <diagram id="NA8I81ji6CoeCR6fYSHt" name="第 1 页">
+        <mxGraphModel dx="990" dy="585" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" background="#FFFFFF" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="64" style="edgeStyle=orthogonalEdgeStyle;rounded=0;sketch=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.75;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontColor=#1D3557;strokeColor=#000000;fillColor=#A8DADC;" edge="1" parent="1" source="2" target="44">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="65" style="edgeStyle=orthogonalEdgeStyle;rounded=0;sketch=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontColor=#1D3557;strokeColor=#000000;fillColor=#A8DADC;" edge="1" parent="1" source="2" target="55">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="67" style="edgeStyle=orthogonalEdgeStyle;rounded=0;sketch=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;fontColor=#1D3557;strokeColor=#000000;fillColor=#A8DADC;" edge="1" parent="1" source="2" target="6">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="2" value="MXRT1052" style="rounded=0;whiteSpace=wrap;html=1;fontColor=#1D3557;fillColor=#FFFFFF;strokeColor=#000000;" vertex="1" parent="1">
+                    <mxGeometry x="280" y="240" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.25;entryDx=0;entryDy=0;labelBackgroundColor=#F1FAEE;fontColor=#1D3557;exitX=1;exitY=0.5;exitDx=0;exitDy=0;strokeColor=#000000;" edge="1" parent="1" source="3" target="2">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="200" y="178"/>
+                            <mxPoint x="200" y="255"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="3" value="&lt;p class=&quot;MsoNormal&quot;&gt;&lt;span style=&quot;font-size: 12pt&quot;&gt;摄像头&amp;nbsp;&lt;/span&gt;&lt;/p&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontColor=#1D3557;fillColor=#FFFFFF;strokeColor=#000000;" vertex="1" parent="1">
+                    <mxGeometry x="48" y="153" width="120" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="5" value="CSI+SCCB&lt;br&gt;协议" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#1D3557;" vertex="1" parent="1">
+                    <mxGeometry x="214" y="230" width="50" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="6" value="oled" style="rounded=0;whiteSpace=wrap;html=1;fontColor=#1D3557;fillColor=#FFFFFF;strokeColor=#000000;" vertex="1" parent="1">
+                    <mxGeometry x="280" y="90" width="120" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="8" value="IIC协议" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#1D3557;" vertex="1" parent="1">
+                    <mxGeometry x="340" y="180" width="50" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="9" value="稳压电源" style="rounded=0;whiteSpace=wrap;html=1;fontColor=#1D3557;fillColor=#FFFFFF;strokeColor=#000000;" vertex="1" parent="1">
+                    <mxGeometry x="15" y="244" width="104" height="56" as="geometry"/>
+                </mxCell>
+                <mxCell id="12" value="电机" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#457B9D;fontColor=#1D3557;fillColor=#FFFFFF;" vertex="1" parent="1">
+                    <mxGeometry x="680" y="170" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="14" value="解码模式" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#1D3557;" vertex="1" parent="1">
+                    <mxGeometry x="340" y="340" width="54" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="15" value="PWM" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#1D3557;" vertex="1" parent="1">
+                    <mxGeometry x="414" y="240" width="40" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="16" value="电机驱动" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#457B9D;fontColor=#1D3557;fillColor=#FFFFFF;" vertex="1" parent="1">
+                    <mxGeometry x="500" y="170" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="22" value="升压&lt;br&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#1D3557;" vertex="1" parent="1">
+                    <mxGeometry x="630" y="170" width="40" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="25" value="舵机驱动" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#457B9D;fontColor=#1D3557;fillColor=#FFFFFF;" vertex="1" parent="1">
+                    <mxGeometry x="500" y="300" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="28" value="舵机" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#457B9D;fontColor=#1D3557;fillColor=#FFFFFF;" vertex="1" parent="1">
+                    <mxGeometry x="680" y="300" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="62" style="edgeStyle=orthogonalEdgeStyle;rounded=0;sketch=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.75;entryDx=0;entryDy=0;fontColor=#1D3557;strokeColor=#000000;fillColor=#A8DADC;" edge="1" parent="1" source="30" target="2">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="30" value="OpenArt" style="rounded=0;whiteSpace=wrap;html=1;fontColor=#1D3557;fillColor=#FFFFFF;strokeColor=#000000;" vertex="1" parent="1">
+                    <mxGeometry x="48" y="343" width="120" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="32" value="Uart" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#1D3557;" vertex="1" parent="1">
+                    <mxGeometry x="229" y="284" width="40" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="33" value="" style="shape=flexArrow;endArrow=classic;html=1;labelBackgroundColor=#F1FAEE;fontColor=#1D3557;strokeColor=#000000;endWidth=36;endSize=10.1;width=23;" edge="1" parent="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="127" y="270" as="sourcePoint"/>
+                        <mxPoint x="191" y="269.5" as="targetPoint"/>
+                        <Array as="points"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="34" value="PWM" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#1D3557;" vertex="1" parent="1">
+                    <mxGeometry x="414" y="286" width="40" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="68" style="edgeStyle=orthogonalEdgeStyle;rounded=0;sketch=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;fontColor=#1D3557;strokeColor=#000000;fillColor=#A8DADC;" edge="1" parent="1" source="39" target="2">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="39" value="编码器" style="rounded=0;whiteSpace=wrap;html=1;fontColor=#1D3557;fillColor=#FFFFFF;strokeColor=#000000;" vertex="1" parent="1">
+                    <mxGeometry x="280" y="407" width="120" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="40" value="电机" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#457B9D;fontColor=#1D3557;fillColor=#FFFFFF;" vertex="1" parent="1">
+                    <mxGeometry x="680" y="170" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="42" value="电机驱动" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#457B9D;fontColor=#1D3557;fillColor=#FFFFFF;" vertex="1" parent="1">
+                    <mxGeometry x="500" y="170" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="63" style="edgeStyle=orthogonalEdgeStyle;rounded=0;sketch=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontColor=#1D3557;strokeColor=#000000;fillColor=#A8DADC;" edge="1" parent="1" source="44" target="57">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="44" value="舵机驱动" style="rounded=0;whiteSpace=wrap;html=1;fontColor=#1D3557;fillColor=#FFFFFF;strokeColor=#000000;" vertex="1" parent="1">
+                    <mxGeometry x="500" y="300" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="45" value="舵机" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#457B9D;fontColor=#1D3557;fillColor=#FFFFFF;" vertex="1" parent="1">
+                    <mxGeometry x="680" y="300" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="53" value="电机" style="rounded=0;whiteSpace=wrap;html=1;fontColor=#1D3557;fillColor=#FFFFFF;strokeColor=#000000;" vertex="1" parent="1">
+                    <mxGeometry x="680" y="170" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="66" style="edgeStyle=orthogonalEdgeStyle;rounded=0;sketch=0;orthogonalLoop=1;jettySize=auto;html=1;fontColor=#1D3557;strokeColor=#000000;fillColor=#A8DADC;" edge="1" parent="1" source="55" target="53">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="55" value="电机驱动" style="rounded=0;whiteSpace=wrap;html=1;fontColor=#1D3557;fillColor=#FFFFFF;strokeColor=#000000;" vertex="1" parent="1">
+                    <mxGeometry x="500" y="170" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="57" value="舵机" style="rounded=0;whiteSpace=wrap;html=1;fontColor=#1D3557;fillColor=#FFFFFF;strokeColor=#000000;" vertex="1" parent="1">
+                    <mxGeometry x="680" y="300" width="120" height="60" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

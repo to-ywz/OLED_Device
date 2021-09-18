@@ -1,0 +1,17 @@
+{
+    "files.associations": {
+        "*.c": "c",
+        "*.md": "markdown",
+        "*.html": "html",
+        "draw_api.h": "c",
+        "sbus.h": "c",
+        "dma.h": "c",
+        "main.h": "c",
+        "stm32f4xx_hal.h": "c",
+        "delay.h": "c",
+        "usart.h": "c",
+        "stdio.h": "c",
+        "string.h": "c",
+        "i2c.h": "c"
+    }
+}
