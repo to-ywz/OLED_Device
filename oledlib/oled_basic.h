@@ -28,8 +28,6 @@ typedef struct ROATE
 #define HW_SPI		(2)
 #define SW_SPI		(3)
 
-#define USING_DMA	(1)
-
 #define IIC_1     (10)
 #define IIC_2     (11)
 

@@ -39,13 +39,16 @@
 	
 #elif (TRANSFER_METHOD == SW_IIC)//软件I2C依赖主频，在F103（72M）测试下通过，其余请自行测试
 
-	#define OLED_ADDRESS  0x78 	//通过调整0R电阻,屏可以0x78和0x7A两个地址 -- 默认0x78
-	#define IIC_SCL             BIT_ADDR(GPIOE_ODR_Addr, 12) 	//SCL
-	#define IIC_SDA             BIT_ADDR(GPIOE_ODR_Addr, 15) 	//SDA
-	#define OLED_GPIO_PORT_I2C	GPIOE							/* GPIO端口 */
-	#define OLED_RCC_I2C_PORT 	RCC_APB2Periph_GPIOE			/* GPIO端口时钟 */
-	#define OLED_I2C_SCL_PIN		GPIO_Pin_12					/* 连接到SCL时钟线的GPIO */
-	#define OLED_I2C_SDA_PIN		GPIO_Pin_15					/* 连接到SDA数据线的GPIO */
+	#define OLED_ADDRESS  				0x78 	//通过调整0R电阻,屏可以0x78和0x7A两个地址 -- 默认0x78
+	#define OLED_GPIO_PORT_I2C			GPIOB							/* GPIO端口 */
+	#define OLED_GPIO_RCC_ENABLE()		__HAL_RCC_GPIOB_CLK_ENABLE();	/* GPIO端口时钟 */
+	#define OLED_I2C_SCL_PIN			GPIO_PIN_0						/* 连接到SCL时钟线的GPIO */
+	#define OLED_I2C_SDA_PIN			GPIO_PIN_1						/* 连接到SDA数据线的GPIO */
+	
+	#define IIC_SCL_SET             	SET_BIT(OLED_GPIO_PORT_I2C->ODR, OLED_I2C_SCL_PIN) 		//SCL
+	#define IIC_SCL_CLS             	CLEAR_BIT(OLED_GPIO_PORT_I2C->ODR, OLED_I2C_SCL_PIN) 	//SCL
+	#define IIC_SDA_SET             	SET_BIT(OLED_GPIO_PORT_I2C->ODR, OLED_I2C_SDA_PIN) 		//SDA
+	#define IIC_SDA_CLS             	CLEAR_BIT(OLED_GPIO_PORT_I2C->ODR, OLED_I2C_SDA_PIN) 	//SDA
 	void I2C_Configuration(void);
 	void I2C_WriteByte(uint8_t addr, uint8_t data);
 

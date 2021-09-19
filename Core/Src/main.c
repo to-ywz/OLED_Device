@@ -21,6 +21,7 @@
 #include "main.h"
 #include "dma.h"
 #include "i2c.h"
+#include "spi.h"
 #include "usart.h"
 #include "gpio.h"
 
@@ -96,6 +97,7 @@ int main(void)
   MX_I2C1_Init();
   MX_USART2_UART_Init();
   MX_USART6_UART_Init();
+  MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
 
   delay_init();
@@ -103,17 +105,7 @@ int main(void)
   DelayMs(200);
 
   UpdateScreen();
-  //HAL_Delay(25);
-  // DrawRoundRect(2, 2, 125, 62, 15);
-  // OledPrintf(" Code:  %x\n Flash: %x\n", cn[0]<<16 | cn[1]<<8 | cn[2], CN16CHAR[0].Index[0]<<16 | CN16CHAR[0].Index[1]<<8 | CN16CHAR[0].Index[2]);
 
-  // DrawString(0, 0, "_");
-  // HAL_Delay(1000);
-  // UpdateScreen();
-  // DrawString(0, 0, " ");
-  // HAL_Delay(1000);
-  // while (!(DMA1->HISR & DMA_HISR_TCIF6))
-  //   ;
   ShowChinese(0, 0, "一只程序羊");
 
   ShowChinese(1, 4, "求打赏");
@@ -121,18 +113,16 @@ int main(void)
   SetFontSize(0);
   DrawString(6, 6 * 8, "blacksheep");
 
-  // HAL_Delay(5000);
-  // OLED_CLS();
-
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  //UpdateScreen();
+  UpdateScreen();
+  // OLED_CLS();
   while (1)
   {
-    //OLED_CLS();
-
+    DrawString(6, 6 * 8, "blacksheep");
+    FrameRateUpdateScreen(60);
     HAL_GPIO_TogglePin(LED_B_GPIO_Port, LED_B_Pin);
     HAL_Delay(500);
     /* USER CODE END WHILE */

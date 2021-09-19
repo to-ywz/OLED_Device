@@ -193,14 +193,6 @@ void SysTick_Handler(void)
   HAL_IncTick();
   /* USER CODE BEGIN SysTick_IRQn 1 */
   OledTimeMsFunc();
-  // if (!DMA1->HISR & DMA_HISR_TCIF6)
-  // {
-  //   unlockBuffer();
-  // }
-  // else
-  // {
-  //   lockedBuffer();
-  // }
   /* USER CODE END SysTick_IRQn 1 */
 }
 
@@ -210,14 +202,16 @@ void SysTick_Handler(void)
 /* For the available peripheral interrupt handler names,                      */
 /* please refer to the startup file (startup_stm32f4xx.s).                    */
 /******************************************************************************/
-extern unsigned char DMA_Finish;
+
 /**
   * @brief This function handles DMA1 stream6 global interrupt.
   */
 void DMA1_Stream6_IRQHandler(void)
 {
   /* USER CODE BEGIN DMA1_Stream6_IRQn 0 */
+#if USING_DMA
   DMATransmitCallback();
+#endif
   /* USER CODE END DMA1_Stream6_IRQn 0 */
   HAL_DMA_IRQHandler(&hdma_i2c1_tx);
   /* USER CODE BEGIN DMA1_Stream6_IRQn 1 */

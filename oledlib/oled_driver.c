@@ -23,8 +23,10 @@
 #include "main.h"
 #include "stm32f4xx_hal_def.h"
 
+extern unsigned char ScreenBuffer[SCREEN_PAGE_NUM][SCREEN_COLUMN];
+
 // OLED 初始化指令数组
-uint8_t OLED_Init_CMD[] =
+static uint8_t OLED_Init_CMD[] =
 	{0xAE, 0x20, 0x10, 0xb0, 0xc8, 0x00, 0x10, 0x40, 0x81, 0xff,
 	 0xa1, 0xa6, 0xa8, 0x3F, 0xa4, 0xd3, 0x00, 0xd5, 0xf0, 0xd9,
 	 0x22, 0xda, 0x12, 0xdb, 0x20, 0x8d, 0x14, 0xaf};
@@ -32,7 +34,6 @@ uint8_t OLED_Init_CMD[] =
 #if (TRANSFER_METHOD == HW_IIC) //1.硬件IIC
 
 //...
-extern unsigned char ScreenBuffer[SCREEN_PAGE_NUM][SCREEN_COLUMN];
 
 //...
 
@@ -154,51 +155,84 @@ void I2C_Configuration(void)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
 
-	RCC_APB2PeriphClockCmd(OLED_RCC_I2C_PORT, ENABLE); /* 打开GPIO时钟 */
+	OLED_GPIO_RCC_ENABLE();
 
-	GPIO_InitStructure.GPIO_Pin = OLED_I2C_SCL_PIN | OLED_I2C_SDA_PIN;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_OD; /* 开漏输出 */
-	GPIO_Init(OLED_GPIO_PORT_I2C, &GPIO_InitStructure);
+	GPIO_InitStructure.Pin = OLED_I2C_SCL_PIN | OLED_I2C_SDA_PIN;
+	GPIO_InitStructure.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+	GPIO_InitStructure.Mode = GPIO_MODE_AF_PP; /* 开漏输出 */
+	HAL_GPIO_Init(OLED_GPIO_PORT_I2C, &GPIO_InitStructure);
 
-	IIC_SDA = 1;
-	IIC_SCL = 1;
+	IIC_SDA_SET;
+	IIC_SCL_SET;
+}
+
+// 等待应答
+static uint8_t I2C_WaiteAck(void)
+{
+	uint8_t i;
+
+	IIC_SDA_SET;
+	delay_us(1);
+	IIC_SCL_SET;
+	delay_us(1);
+
+	while (OLED_GPIO_PORT_I2C->IDR & OLED_I2C_SDA_PIN)
+	{
+		i++;
+		if (i > 128)
+		{
+			IIC_Stop();
+			return 1;
+		}
+	}
+	IIC_SCL_CLS;
+
+	return 0;
 }
 
 /**
-		 @brief  I2C_WriteByte，向OLED寄存器地址写一个byte的数据
-		 @param  addr：寄存器地址 data：要写入的数据
-		 @retval 无
-	*/
+ * @brief  		I2C_WriteByte，向OLED寄存器地址写一个byte的数据
+ * @param[in] 	addr：寄存器地址 data：要写入的数据
+ * @retval 		无
+ * */
 void I2C_WriteByte(uint8_t addr, uint8_t data)
 {
 	IIC_Start();
 	IIC_Send_Byte(OLED_ADDRESS);
+	I2C_WaiteAck();
 	IIC_Send_Byte(addr); //write data
+	I2C_WaiteAck();
 	IIC_Send_Byte(data);
+	I2C_WaiteAck();
 	IIC_Stop();
 }
 
-void WriteCmd(unsigned char cmd) //写命令
+void WriteCmd(unsigned char *cmd, int len) //写命令
 {
-	I2C_WriteByte(0x00, cmd);
+	for (uint16_t i = 0; i < len; i++)
+	{
+		I2C_WriteByte(0x00, cmd[i]);
+	}
 }
 
-void WriteDat(unsigned char dat) //写数据
+void WriteDat(unsigned char *dat, int len) //写数据
 {
-	I2C_WriteByte(0x40, dat);
+	for (uint16_t i = 0; i < len; i++)
+	{
+		I2C_WriteByte(0x40, dat[i]);
+	}
 }
 
 //以下函数开始为软件IIC驱动
 //产生IIC起始信号
 void IIC_Start(void)
 {
-	IIC_SCL = 1;
-	IIC_SDA = 1;
-	//delay_us(1);
-	IIC_SDA = 0;
-	//delay_us(1);
-	IIC_SCL = 0;
+	IIC_SDA_SET;
+	IIC_SCL_SET;
+	delay_us(4);
+	IIC_SDA_CLS;
+	delay_us(4);
+	IIC_SCL_CLS;
 }
 
 //IIC发送一个字节
@@ -208,32 +242,40 @@ void IIC_Start(void)
 void IIC_Send_Byte(uint8_t IIC_Byte)
 {
 	unsigned char i;
+
+	IIC_SCL_CLS;
+
 	for (i = 0; i < 8; i++)
 	{
 		if (IIC_Byte & 0x80)
-			IIC_SDA = 1;
+			IIC_SDA_SET;
 		else
-			IIC_SDA = 0;
-		//delay_us(1);
-		IIC_SCL = 1;
-		delay_us(1); //必须有保持SCL脉冲的延时
-		IIC_SCL = 0;
+			IIC_SDA_CLS;
 		IIC_Byte <<= 1;
+
+		delay_us(2);
+		IIC_SCL_SET;
+		delay_us(2); //必须有保持SCL脉冲的延时
+		IIC_SCL_CLS;
+		delay_us(2);
 	}
 	//原程序这里有一个拉高SDA，根据OLED的要求，此句必须去掉。
-	IIC_SCL = 1;
-	delay_us(1);
-	IIC_SCL = 0;
+	// IIC_SDA_SET;
+	// IIC_SCL_SET;
+	// delay_us(1);
+	// IIC_SCL_CLS;
 }
 
 //产生IIC停止信号
 void IIC_Stop(void)
 {
-	IIC_SDA = 0;
-	//delay_us(1);
-	IIC_SCL = 1;
-	//delay_us(1);
-	IIC_SDA = 1;
+	IIC_SCL_CLS;
+	IIC_SDA_CLS;
+	delay_us(4);
+	IIC_SCL_SET;
+	delay_us(4);
+	IIC_SDA_SET;
+	delay_us(4);
 }
 
 #elif (TRANSFER_METHOD == HW_SPI) //3.硬件SPI
