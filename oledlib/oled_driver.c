@@ -280,94 +280,118 @@ void IIC_Stop(void)
 
 #elif (TRANSFER_METHOD == HW_SPI) //3.硬件SPI
 
-#define OLED_RESET_LOW() GPIO_ResetBits(SPI_RES_GPIOX, SPI_RES_PIN) //低电平复位
-#define OLED_RESET_HIGH() GPIO_SetBits(SPI_RES_GPIOX, SPI_RES_PIN)
+#define OLED_RESET_LOW() HAL_GPIO_WritePin(SPI_RES_GPIOx, SPI_RES_PIN, GPIO_PIN_RESET) //低电平复位
+#define OLED_RESET_HIGH() HAL_GPIO_WritePin(SPI_RES_GPIOx, SPI_RES_PIN, GPIO_PIN_SET)
 
-#define OLED_CMD_MODE() GPIO_ResetBits(SPI_DC_GPIOX, SPI_DC_PIN) //命令模式
-#define OLED_DATA_MODE() GPIO_SetBits(SPI_DC_GPIOX, SPI_DC_PIN)	 //数据模式
+#define OLED_CMD_MODE() HAL_GPIO_WritePin(SPI_DC_GPIOx, SPI_DC_PIN, GPIO_PIN_RESET) //命令模式
+#define OLED_DATA_MODE() HAL_GPIO_WritePin(SPI_DC_GPIOx, SPI_DC_PIN, GPIO_PIN_SET)	//数据模式
 
-#define OLED_CS_HIGH() GPIO_SetBits(SPI_CS_GPIOX, SPI_CS_Pin_X)
-#define OLED_CS_LOW() GPIO_ResetBits(SPI_CS_GPIOX, SPI_CS_Pin_X)
+#define OLED_CS_HIGH() HAL_GPIO_WritePin(SPI_CS_GPIOx, SPI_CS_Pin_x, GPIO_PIN_RESET)
+#define OLED_CS_LOW() HAL_GPIO_WritePin(SPI_CS_GPIOx, SPI_CS_Pin_x, GPIO_PIN_SET)
+
+extern SPI_HandleTypeDef hspi1;
+extern DMA_HandleTypeDef hdma_spi1_tx;
 
 void SPI_Configuration(void)
 {
 	SPI_InitTypeDef SPI_InitStructure;
 	GPIO_InitTypeDef GPIO_InitStructure;
-#if (USE_HW_SPI == SPI_2)
-	RCC_APB1PeriphClockCmd(SPI_RCC_APB1Periph_SPIX, ENABLE);
-#elif (USE_HW_SPI == SPI_1)
-	RCC_APB2PeriphClockCmd(SPI_RCC_APB2Periph_SPIX, ENABLE);
-#endif
-	RCC_APB2PeriphClockCmd(SPI_RCC_APB2Periph_GPIOX | RCC_APB2Periph_AFIO, ENABLE);
 
-	GPIO_InitStructure.GPIO_Pin = SPI_CS_Pin_X;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-	GPIO_Init(SPI_CS_GPIOX, &GPIO_InitStructure);
+	SPI_RCC_SPIx_EN();
+	SPI_RCC_GPIOx_EN();
+
+	//* 软件 片选引脚
+	GPIO_InitStructure.Pin = SPI_CS_Pin_x;
+	GPIO_InitStructure.Speed = GPIO_SPEED_FREQ_HIGH;
+	GPIO_InitStructure.Mode = GPIO_MODE_OUTPUT_PP;
+	HAL_GPIO_Init(SPI_CS_GPIOx, &GPIO_InitStructure);
 	OLED_CS_HIGH();
 
-	GPIO_InitStructure.GPIO_Pin = SPI_HW_ALL_PINS;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
-	GPIO_Init(SPI_HW_ALL_GPIOX, &GPIO_InitStructure);
+	// * SPI 引脚
+	GPIO_InitStructure.Pin = SPI_HW_ALL_PINS;
+	GPIO_InitStructure.Speed = GPIO_SPEED_FREQ_HIGH;
+	GPIO_InitStructure.Mode = GPIO_MODE_AF_PP;
+	HAL_GPIO_Init(SPI_HW_ALL_GPIOx, &GPIO_InitStructure);
 
-	SPI_InitStructure.SPI_Direction = SPI_Direction_2Lines_FullDuplex; //SPI_Direction_1Line_Tx;
-	SPI_InitStructure.SPI_Mode = SPI_Mode_Master;
-	SPI_InitStructure.SPI_DataSize = SPI_DataSize_8b;
-	SPI_InitStructure.SPI_CPOL = SPI_CPOL_Low;
-	SPI_InitStructure.SPI_CPHA = SPI_CPHA_1Edge;
-	SPI_InitStructure.SPI_NSS = SPI_NSS_Soft;
-	SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_2;
-	SPI_InitStructure.SPI_FirstBit = SPI_FirstBit_MSB;
-	SPI_InitStructure.SPI_CRCPolynomial = 7;
+	hspi1.Instance = SPI1;
+	hspi1.Init.Mode = SPI_MODE_MASTER;
+	hspi1.Init.Direction = SPI_DIRECTION_2LINES;
+	hspi1.Init.DataSize = SPI_DATASIZE_8BIT;
+	hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
+	hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
+	hspi1.Init.NSS = SPI_NSS_SOFT;
+	hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
+	hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
+	hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
+	hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
+	hspi1.Init.CRCPolynomial = 10;
+	if (HAL_SPI_Init(&hspi1) != HAL_OK)
+	{
+		Error_Handler();
+	}
 
-	SPI_Init(SPIX, &SPI_InitStructure);
-	SPI_Cmd(SPIX, ENABLE);
+#if USING_DMA
+	hdma_spi1_tx.Instance = DMA2_Stream3;
+	hdma_spi1_tx.Init.Channel = DMA_CHANNEL_3;
+	hdma_spi1_tx.Init.Direction = DMA_MEMORY_TO_PERIPH;
+	hdma_spi1_tx.Init.PeriphInc = DMA_PINC_DISABLE;
+	hdma_spi1_tx.Init.MemInc = DMA_MINC_ENABLE;
+	hdma_spi1_tx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
+	hdma_spi1_tx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
+	hdma_spi1_tx.Init.Mode = DMA_NORMAL;
+	hdma_spi1_tx.Init.Priority = DMA_PRIORITY_LOW;
+	hdma_spi1_tx.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
+	if (HAL_DMA_Init(&hdma_spi1_tx) != HAL_OK)
+	{
+		Error_Handler();
+	}
 
-	GPIO_InitStructure.GPIO_Pin = SPI_RES_PIN;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-	GPIO_Init(SPI_RES_GPIOX, &GPIO_InitStructure);
-	GPIO_InitStructure.GPIO_Pin = SPI_DC_PIN;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-	GPIO_Init(SPI_DC_GPIOX, &GPIO_InitStructure);
+	__HAL_LINKDMA(spiHandle, hdmatx, hdma_spi1_tx);
+
+	/* SPI1 interrupt Init */
+	HAL_NVIC_SetPriority(SPI1_IRQn, 0, 0);
+	HAL_NVIC_EnableIRQ(SPI1_IRQn);
+#endif
+
+	// * 复位引脚
+	GPIO_InitStructure.Pin = SPI_RES_PIN;
+	GPIO_InitStructure.Speed = GPIO_SPEED_FREQ_HIGH;
+	GPIO_InitStructure.Mode = GPIO_MODE_OUTPUT_PP;
+	HAL_GPIO_Init(SPI_RES_GPIOx, &GPIO_InitStructure);
+
+	// * DC 引脚
+	GPIO_InitStructure.Pin = SPI_DC_PIN;
+	GPIO_InitStructure.Speed = GPIO_SPEED_FREQ_HIGH;
+	GPIO_InitStructure.Mode = GPIO_MODE_OUTPUT_PP;
+	HAL_GPIO_Init(SPI_DC_GPIOx, &GPIO_InitStructure);
 	OLED_DATA_MODE();
 
 	OLED_RESET_HIGH();
-	WaitTimeMs(100);
+	delay_ms(100);
 	OLED_RESET_LOW();
-	WaitTimeMs(100);
+	delay_ms(100);
 	OLED_RESET_HIGH();
 }
 
-void SPI_WriterByte(unsigned char dat)
+void SPI_WriterByte(unsigned char *dat, int len)
 {
-
-	while (SPI_I2S_GetFlagStatus(SPIX, SPI_I2S_FLAG_TXE) == RESET)
-	{
-	};							 //检查指定的SPI标志位设置与否:发送缓存空标志位
-	SPI_I2S_SendData(SPIX, dat); //通过外设SPIx发送一个数据
-	while (SPI_I2S_GetFlagStatus(SPIX, SPI_I2S_FLAG_RXNE) == RESET)
-	{
-	};						   //检查指定的SPI标志位设置与否:接受缓存非空标志位
-	SPI_I2S_ReceiveData(SPIX); //返回通过SPIx最近接收的数据
+	HAL_SPI_Transmit(&hspi1, dat, len, 1000);
 }
 
-void WriteCmd(unsigned char cmd)
+void WriteCmd(unsigned char *cmd, int len)
 {
 	OLED_CMD_MODE();
 	OLED_CS_LOW();
-	SPI_WriterByte(cmd);
+	SPI_WriterByte(cmd, len);
 	OLED_CS_HIGH();
 	OLED_DATA_MODE();
 }
 
-void WriteDat(unsigned char dat)
+void WriteDat(unsigned char *dat, int len)
 {
 	OLED_DATA_MODE();
 	OLED_CS_LOW();
-	SPI_WriterByte(dat);
+	SPI_WriterByte(dat, len);
 	OLED_CS_HIGH();
 	OLED_DATA_MODE();
 }
@@ -379,18 +403,18 @@ void SPI_Configuration(void)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
 
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE); //使能A端口时钟
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4 | GPIO_Pin_5 | GPIO_Pin_6 | GPIO_Pin_7 | GPIO_Pin_8;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;  //推挽输出
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz; //速度50MHz
-	GPIO_Init(GPIOA, &GPIO_InitStructure);
-	GPIO_SetBits(GPIOA, GPIO_Pin_5 | GPIO_Pin_7 | GPIO_Pin_4);
+	OLED_GPIO_RCC_ENABLE(); //使能B端口时钟
+	GPIO_InitStructure.Pin = OLED_SPI_CLK_PIN | OLED_SPI_DIN_PIN | OLED_SPI_RES_PIN | OLED_SPI_DC_PIN | OLED_SPI_CS_PIN;
+	GPIO_InitStructure.Mode = GPIO_MODE_OUTPUT_PP;		  //推挽输出
+	GPIO_InitStructure.Speed = GPIO_SPEED_FREQ_VERY_HIGH; //速度50MHz
+	HAL_GPIO_Init(OLED_GPIO_PORT_SPI, &GPIO_InitStructure);
+	HAL_GPIO_WritePin(OLED_GPIO_PORT_SPI, OLED_SPI_CLK_PIN | OLED_SPI_DIN_PIN | OLED_SPI_DC_PIN, GPIO_PIN_SET);
 
-	OLED_RST_Set();
+	OLED_RST_SET;
 	delay_ms(100);
-	OLED_RST_Clr();
+	OLED_RST_CLS;
 	delay_ms(200);
-	OLED_RST_Set();
+	OLED_RST_SET;
 }
 
 //写字节
@@ -398,37 +422,43 @@ void OLED_WR_Byte(uint8_t dat, uint8_t cmd)
 {
 	uint8_t i;
 	if (cmd)
-		OLED_DC_Set();
+		OLED_DC_SET;
 	else
-		OLED_DC_Clr();
-	OLED_CS_Clr();
+		OLED_DC_CLS;
+	OLED_CS_CLS;
 	for (i = 0; i < 8; i++)
 	{
-		OLED_SCLK_Clr();
+		OLED_SCLK_CLS;
 		if (dat & 0x80)
-			OLED_SDIN_Set();
+			OLED_SDIN_SET;
 		else
-			OLED_SDIN_Clr();
-		OLED_SCLK_Set();
+			OLED_SDIN_CLS;
+		OLED_SCLK_SET;
 		dat <<= 1;
 	}
-	OLED_CS_Set();
-	OLED_DC_Set();
+	OLED_CS_SET;
+	OLED_DC_SET;
 }
 
 //写命令
-void WriteCmd(unsigned char cmd)
+void WriteCmd(unsigned char *cmd, int len)
 {
-	OLED_WR_Byte(cmd, 0);
+	for (uint16_t i = 0; i < len; i++)
+	{
+		OLED_WR_Byte(cmd[i], 0);
+	}
 }
 
 //写数据
-void WriteDat(unsigned char dat)
+void WriteDat(unsigned char *dat, int len)
 {
-	OLED_WR_Byte(dat, 1);
+	for (uint16_t i = 0; i < len; i++)
+	{
+		OLED_WR_Byte(dat[i], 1);
+	}
 }
 
-#endif //(TRANSFER_METHOD ==HW_IIC)
+#endif
 
 void OLED_Init(void)
 {

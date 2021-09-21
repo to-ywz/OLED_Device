@@ -340,7 +340,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F401xC</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;  F:/STM32/STM32CubeLib/STM32Cube_FW_F4_V1.26.2/Drivers/STM32F4xx_HAL_Driver/Inc;  F:/STM32/STM32CubeLib/STM32Cube_FW_F4_V1.26.2/Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;  F:/STM32/STM32CubeLib/STM32Cube_FW_F4_V1.26.2/Drivers/CMSIS/Device/ST/STM32F4xx/Include;  F:/STM32/STM32CubeLib/STM32Cube_FW_F4_V1.26.2/Drivers/CMSIS/Include;  ..\oledlib;  ..\Delay</IncludePath>
+              <IncludePath>../Core/Inc;         F:/STM32/STM32CubeLib/STM32Cube_FW_F4_V1.26.2/Drivers/STM32F4xx_HAL_Driver/Inc;         F:/STM32/STM32CubeLib/STM32Cube_FW_F4_V1.26.2/Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;         F:/STM32/STM32CubeLib/STM32Cube_FW_F4_V1.26.2/Drivers/CMSIS/Device/ST/STM32F4xx/Include;         F:/STM32/STM32CubeLib/STM32Cube_FW_F4_V1.26.2/Drivers/CMSIS/Include;         ..\oledlib;         ..\Delay</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>

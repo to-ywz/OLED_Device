@@ -40,10 +40,10 @@
 #elif (TRANSFER_METHOD == SW_IIC)//软件I2C依赖主频，在F103（72M）测试下通过，其余请自行测试
 
 	#define OLED_ADDRESS  				0x78 	//通过调整0R电阻,屏可以0x78和0x7A两个地址 -- 默认0x78
-	#define OLED_GPIO_PORT_I2C			GPIOB							/* GPIO端口 */
-	#define OLED_GPIO_RCC_ENABLE()		__HAL_RCC_GPIOB_CLK_ENABLE();	/* GPIO端口时钟 */
-	#define OLED_I2C_SCL_PIN			GPIO_PIN_0						/* 连接到SCL时钟线的GPIO */
-	#define OLED_I2C_SDA_PIN			GPIO_PIN_1						/* 连接到SDA数据线的GPIO */
+	#define OLED_GPIO_PORT_I2C			GPIOA							/* GPIO端口 */
+	#define OLED_GPIO_RCC_ENABLE()		__HAL_RCC_GPIOA_CLK_ENABLE();	/* GPIO端口时钟 */
+	#define OLED_I2C_SCL_PIN			GPIO_PIN_4						/* 连接到SCL时钟线的GPIO */
+	#define OLED_I2C_SDA_PIN			GPIO_PIN_6						/* 连接到SDA数据线的GPIO */
 	
 	#define IIC_SCL_SET             	SET_BIT(OLED_GPIO_PORT_I2C->ODR, OLED_I2C_SCL_PIN) 		//SCL
 	#define IIC_SCL_CLS             	CLEAR_BIT(OLED_GPIO_PORT_I2C->ODR, OLED_I2C_SCL_PIN) 	//SCL
@@ -56,48 +56,75 @@
 #elif (TRANSFER_METHOD == HW_SPI)
 
 	#if (USE_HW_SPI==SPI_1)
-	//硬件SPI1还没实现
-	#elif (USE_HW_SPI==SPI_2)
-		#define SPIX                      SPI2
+		#define SPIX                      	SPI1
 		//使能SPI2时钟
-		#define SPI_RCC_APB1Periph_SPIX   RCC_APB1Periph_SPI2
+		#define SPI_RCC_SPIx_EN()  	 		__HAL_RCC_SPI1_CLK_ENABLE();
 		//使能gpio时钟，使用的GPIO不一样时可定义如下：
-		//#define SPI_RCC_APB2Periph_GPIOX  RCC_APB2Periph_GPIOB|RCC_APB2Periph_GPIOC
-		#define SPI_RCC_APB2Periph_GPIOX  RCC_APB2Periph_GPIOB
+		#define SPI_RCC_GPIOx_EN()			__HAL_RCC_GPIOA_CLK_ENABLE();\
+											__HAL_RCC_GPIOB_CLK_ENABLE();
 		//CS片选（软件片选）
-		#define SPI_CS_Pin_X              GPIO_Pin_12
-		#define SPI_CS_GPIOX              GPIOB
+		#define SPI_CS_Pin_x              	GPIO_PIN_10
+		#define SPI_CS_GPIOx              	GPIOB
 		//SPI2 时钟、mosi、miso引脚
-		#define SPI_HW_ALL_PINS           (GPIO_Pin_13|GPIO_Pin_14|GPIO_Pin_15)
-		#define SPI_HW_ALL_GPIOX          GPIOB
+		#define SPI_HW_ALL_PINS           	(GPIO_PIN_5|GPIO_PIN_7)
+		#define SPI_HW_ALL_GPIOx          	GPIOA
 		//复位引脚
-		#define SPI_RES_PIN               GPIO_Pin_10
-		#define SPI_RES_GPIOX             GPIOB
+		#define SPI_RES_PIN               	GPIO_PIN_2
+		#define SPI_RES_GPIOx             	GPIOB
 		//控制引脚
-		#define SPI_DC_PIN                GPIO_Pin_11
-		#define SPI_DC_GPIOX              GPIOB
+		#define SPI_DC_PIN                	GPIO_PIN_10
+		#define SPI_DC_GPIOx              	GPIOB
+	#elif (USE_HW_SPI==SPI_2)
+
+		#define SPIX                      	SPI2
+		//使能SPI2时钟
+		#define SPI_RCC_SPIx_EN()  	 		__HAL_RCC_SPI2_CLK_ENABLE();
+		//使能gpio时钟，使用的GPIO不一样时可定义如下：
+		#define SPI_RCC_GPIOx_EN()			__HAL_RCC_GPIOA_CLK_ENABLE();\
+											__HAL_RCC_GPIOB_CLK_ENABLE();
+		//CS片选（软件片选）
+		#define SPI_CS_Pin_x              	GPIO_PIN_12
+		#define SPI_CS_GPIOx              	GPIOB
+		//SPI2 时钟、mosi、miso引脚
+		#define SPI_HW_ALL_PINS           	(GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_15)
+		#define SPI_HW_ALL_GPIOx          	GPIOB
+		//复位引脚
+		#define SPI_RES_PIN               	GPIO_PIN_10
+		#define SPI_RES_GPIOx             	GPIOB
+		//控制引脚
+		#define SPI_DC_PIN                	GPIO_PIN_111
+		#define SPI_DC_GPIOx              	GPIOB
+
 	#endif
 	void SPI_Configuration(void);
-	void SPI_WriterByte(unsigned char dat);
+	// void SPI_WriterByte(unsigned char dat);
 	
 #elif (TRANSFER_METHOD == SW_SPI)
 	
-	#define OLED_SCLK_Clr() GPIO_ResetBits(GPIOA,GPIO_Pin_4)  //CLK
-	#define OLED_SCLK_Set() GPIO_SetBits(GPIOA,GPIO_Pin_4)
+	#define OLED_GPIO_PORT_SPI			GPIOB							/* GPIO端口 */
+	#define OLED_GPIO_RCC_ENABLE()		__HAL_RCC_GPIOB_CLK_ENABLE();	/* GPIO端口时钟 */
+	#define OLED_SPI_CLK_PIN			GPIO_PIN_0						/* 连接到CLK时钟线的GPIO */
+	#define OLED_SPI_DIN_PIN			GPIO_PIN_1						/* 连接到DIN数据线的GPIO */
+	#define OLED_SPI_RES_PIN			GPIO_PIN_2						/* 连接到RES复位线的GPIO */
+	#define OLED_SPI_DC_PIN				GPIO_PIN_10						/* 连接到CS片选线的GPIO */
+	#define OLED_SPI_CS_PIN				GPIO_PIN_12						/* 连接到CS片选线的GPIO */
 
-	#define OLED_SDIN_Clr() GPIO_ResetBits(GPIOA,GPIO_Pin_5)  //DIN
-	#define OLED_SDIN_Set() GPIO_SetBits(GPIOA,GPIO_Pin_5)
+	#define OLED_SCLK_CLS 				SET_BIT(OLED_GPIO_PORT_SPI->ODR, OLED_SPI_CLK_PIN) //CLK
+	#define OLED_SCLK_SET 				CLEAR_BIT(OLED_GPIO_PORT_SPI->ODR, OLED_SPI_CLK_PIN)
 
-	#define OLED_RST_Clr() GPIO_ResetBits(GPIOA,GPIO_Pin_6)   //RES
-	#define OLED_RST_Set() GPIO_SetBits(GPIOA,GPIO_Pin_6)
+	#define OLED_SDIN_CLS 				HAL_GPIO_WritePin(OLED_GPIO_PORT_SPI, OLED_SPI_DIN_PIN, GPIO_PIN_SET) //DIN
+	#define OLED_SDIN_SET 				HAL_GPIO_WritePin(OLED_GPIO_PORT_SPI, OLED_SPI_DIN_PIN, GPIO_PIN_RESET)
 
-	#define OLED_DC_Clr() GPIO_ResetBits(GPIOA,GPIO_Pin_7)    //DC
-	#define OLED_DC_Set() GPIO_SetBits(GPIOA,GPIO_Pin_7)
+	#define OLED_RST_CLS 				SET_BIT(OLED_GPIO_PORT_SPI->ODR, OLED_SPI_RES_PIN) //RES
+	#define OLED_RST_SET 				CLEAR_BIT(OLED_GPIO_PORT_SPI->ODR, OLED_SPI_RES_PIN)
 
-	#define OLED_CS_Clr()  GPIO_ResetBits(GPIOA,GPIO_Pin_8)   //CS
-	#define OLED_CS_Set()  GPIO_SetBits(GPIOA,GPIO_Pin_8)
+	#define OLED_DC_CLS 				SET_BIT(OLED_GPIO_PORT_SPI->ODR, OLED_SPI_DC_PIN) //DC
+	#define OLED_DC_SET 				CLEAR_BIT(OLED_GPIO_PORT_SPI->ODR, OLED_SPI_DC_PIN)
 
-	#define OLED_CMD  0 //写命令
+	#define OLED_CS_CLS 				SET_BIT(OLED_GPIO_PORT_SPI->ODR, OLED_SPI_CS_PIN) //CS
+	#define OLED_CS_SET 				CLEAR_BIT(OLED_GPIO_PORT_SPI->ODR, OLED_SPI_CS_PIN)
+
+	#define OLED_CMD 0	//写命令
 	#define OLED_DATA 1 //写数据
 	void SPI_Configuration(void);
 	void SPI_WriterByte(unsigned char dat);

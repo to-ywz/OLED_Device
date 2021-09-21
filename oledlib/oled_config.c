@@ -22,11 +22,11 @@ unsigned int OledTimeMs = 0; //时间基准
 //初始化图形库，请将硬件初始化信息放入此中
 void DriverInit(void)
 {
-#if (TRANSFER_METHOD == HW_IIC) || (TRANSFER_METHOD == SW_IIC) || (TRANSFER_METHOD == HW_IIC_DMA)
 // ! 建议在STM32CubeMX中生成配置
+#if (TRANSFER_METHOD == HW_IIC) || (TRANSFER_METHOD == SW_IIC) || (TRANSFER_METHOD == HW_IIC_DMA)
 // I2C_Configuration();
 #elif (TRANSFER_METHOD == HW_SPI) || (TRANSFER_METHOD == SW_SPI) || (TRANSFER_METHOD == HW_SPI_DMA)
-	SPI_Configuration(); //初始化接口
+	// SPI_Configuration(); //初始化接口
 #endif
 	OLED_Init(); //初始化配置oled
 }
