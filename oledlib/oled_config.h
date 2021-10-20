@@ -15,9 +15,9 @@
 //3.SW_IIC    	软件IIC			支持
 //4.HW_SPI		硬件SPI			不支持
 //5.HW_SPI_DMA	硬件SPI+DMA		不支持
-//6.SW_SPI		软件IIC			不支持
+//6.SW_SPI		软件SPI			不支持
 /*****************************************************************/
-#define  TRANSFER_METHOD   (HW_SPI) //如果选择了硬件驱动，请在下方选择硬件编号
+#define  TRANSFER_METHOD   (SW_SPI) //如果选择了硬件驱动，请在下方选择硬件编号
 
 #if (TRANSFER_METHOD==HW_IIC)
 		//IIC_1: PB6 -- SCL; PB7 -- SDA

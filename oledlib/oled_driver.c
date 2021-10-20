@@ -373,11 +373,23 @@ void SPI_Configuration(void)
 	OLED_RESET_HIGH();
 }
 
+/**
+ * @brief 		SPI 写字节
+ * 
+ * @param dat 	写入数据地址
+ * @param len 	写入数据长度
+ */
 void SPI_WriterByte(unsigned char *dat, int len)
 {
 	HAL_SPI_Transmit(&hspi1, dat, len, 1000);
 }
 
+/**
+ * @brief 		写数据
+ * 
+ * @param dat 	命令地址
+ * @param len 	命令长度
+ */
 void WriteCmd(unsigned char *cmd, int len)
 {
 	OLED_CMD_MODE();
@@ -387,6 +399,12 @@ void WriteCmd(unsigned char *cmd, int len)
 	OLED_DATA_MODE();
 }
 
+/**
+ * @brief 		写数据
+ * 
+ * @param dat 	数据地址
+ * @param len 	数据长度
+ */
 void WriteDat(unsigned char *dat, int len)
 {
 	OLED_DATA_MODE();
@@ -398,7 +416,10 @@ void WriteDat(unsigned char *dat, int len)
 
 #elif (TRANSFER_METHOD == SW_SPI) //4.软件SPI
 
-//引脚初始化
+/**
+ * @brief 引脚初始化
+ * 
+ */
 void SPI_Configuration(void)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
@@ -417,7 +438,12 @@ void SPI_Configuration(void)
 	OLED_RST_SET;
 }
 
-//写字节
+/**
+ * @brief 		写字节
+ * 
+ * @param dat 	写入的字节
+ * @param cmd 	写命令|写数据
+ */
 void OLED_WR_Byte(uint8_t dat, uint8_t cmd)
 {
 	uint8_t i;
@@ -440,7 +466,12 @@ void OLED_WR_Byte(uint8_t dat, uint8_t cmd)
 	OLED_DC_SET;
 }
 
-//写命令
+/**
+ * @brief 		写命令
+ * 
+ * @param cmd 	命令
+ * @param len 
+ */
 void WriteCmd(unsigned char *cmd, int len)
 {
 	for (uint16_t i = 0; i < len; i++)
@@ -534,7 +565,6 @@ void OLED_OFF(void)
 	DMA_WriteCmd(buf, sizeof(buf));
 #else
 	WriteCmd(buf, sizeof(buf));
-
 #endif
 }
 

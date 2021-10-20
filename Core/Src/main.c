@@ -32,6 +32,7 @@
 #include "stdio.h"
 #include "stdlib.h"
 #include "string.h"
+#include "oled_driver.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -104,13 +105,13 @@ int main(void)
   InitGraph();
   DelayMs(200);
 
-  UpdateScreen();
+  // UpdateScreen();
 
-  ShowChinese(0, 0, "一只程序羊");
+  // ShowChinese(0, 0, "一只程序羊");
 
-  ShowChinese(1, 4, "求打赏");
+  // ShowChinese(1, 4, "求打赏");
 
-  SetFontSize(0);
+  // SetFontSize(0);
   DrawString(6, 6 * 8, "blacksheep");
 
   /* USER CODE END 2 */
@@ -119,12 +120,15 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   UpdateScreen();
   // OLED_CLS();
+  uint8_t dat = 0xa0;
   while (1)
   {
-   DrawString(6, 6 * 8, "blacksheep");
-   FrameRateUpdateScreen(60);
-    HAL_GPIO_TogglePin(LED_B_GPIO_Port, GPIO_PIN_13);
-    HAL_Delay(500);
+    //WriteCmd(&dat, 1);
+    // DrawString(6, 6 * 8, "blacksheep");
+    // UpdateScreen();
+    // FrameRateUpdateScreen(60);
+    // HAL_GPIO_TogglePin(LED_B_GPIO_Port, GPIO_PIN_13);
+    // HAL_Delay(500);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -162,8 +166,7 @@ void SystemClock_Config(void)
   }
   /** Initializes the CPU, AHB and APB buses clocks
   */
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
-                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
@@ -194,7 +197,7 @@ void Error_Handler(void)
   /* USER CODE END Error_Handler_Debug */
 }
 
-#ifdef  USE_FULL_ASSERT
+#ifdef USE_FULL_ASSERT
 /**
   * @brief  Reports the name of the source file and the source line number
   *         where the assert_param error has occurred.
