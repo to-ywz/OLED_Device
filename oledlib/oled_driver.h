@@ -21,7 +21,7 @@
 		#define HWI2Cx_12864 				&hi2c1
 		
 		#if USING_DMA	
-			#define IIC_DMA 				DMA1
+			#define IIC_DMA_SRREG 			DMA1->HISR
 			#define IIC_DMA_TCIF			DMA_HISR_TCIF6
 		#endif
 
@@ -64,7 +64,7 @@
 		//CS片选（软件片选）
 		#define SPI_CS_Pin_x              	GPIO_PIN_12
 		#define SPI_CS_GPIOx              	GPIOB
-		//SPI2 时钟、mosi、miso引脚
+		//SPI2 时钟、mosi引脚
 		#define SPI_HW_ALL_PINS           	(GPIO_PIN_5|GPIO_PIN_7)
 		#define SPI_HW_ALL_GPIOx          	GPIOA
 		//复位引脚
@@ -91,10 +91,16 @@
 		#define SPI_RES_PIN               	GPIO_PIN_10
 		#define SPI_RES_GPIOx             	GPIOB
 		//控制引脚
-		#define SPI_DC_PIN                	GPIO_PIN_111
+		#define SPI_DC_PIN                	GPIO_PIN_11
 		#define SPI_DC_GPIOx              	GPIOB
 
 	#endif
+
+	#if USING_DMA	// 自行查看 SPIx 对应的 DMA 和 寄存器
+		#define SPI_DMA_SRREG				DMA2->LISR
+		#define SPI_DMA_TCIF				DMA_LISR_TCIF3
+	#endif
+
 	void SPI_Configuration(void);
 	// void SPI_WriterByte(unsigned char dat);
 	
@@ -107,21 +113,6 @@
 	#define OLED_SPI_RES_PIN			GPIO_PIN_2						/* 连接到RES复位线的GPIO */
 	#define OLED_SPI_DC_PIN				GPIO_PIN_10						/* 连接到DC片选线的GPIO */
 	#define OLED_SPI_CS_PIN				GPIO_PIN_12						/* 连接到CS片选线的GPIO */
-
-	#define OLED_SCLK_CLS 				CLEAR_BIT(OLED_GPIO_PORT_SPI->ODR, OLED_SPI_CLK_PIN) //CLK
-	#define OLED_SCLK_SET 				SET_BIT(OLED_GPIO_PORT_SPI->ODR, OLED_SPI_CLK_PIN)
-
-	#define OLED_SDIN_CLS 				CLEAR_BIT(OLED_GPIO_PORT_SPI->ODR, OLED_SPI_DIN_PIN) //DIN
-	#define OLED_SDIN_SET 				SET_BIT(OLED_GPIO_PORT_SPI->ODR, OLED_SPI_DIN_PIN)
-
-	#define OLED_RST_CLS 				CLEAR_BIT(OLED_GPIO_PORT_SPI->ODR, OLED_SPI_RES_PIN) //RES
-	#define OLED_RST_SET 				SET_BIT(OLED_GPIO_PORT_SPI->ODR, OLED_SPI_RES_PIN)
-
-	#define OLED_DC_CLS 				CLEAR_BIT(OLED_GPIO_PORT_SPI->ODR, OLED_SPI_DC_PIN) //DC
-	#define OLED_DC_SET 				SET_BIT(OLED_GPIO_PORT_SPI->ODR, OLED_SPI_DC_PIN)
-
-	#define OLED_CS_CLS 				CLEAR_BIT(OLED_GPIO_PORT_SPI->ODR, OLED_SPI_CS_PIN) //CS
-	#define OLED_CS_SET 				SET_BIT(OLED_GPIO_PORT_SPI->ODR, OLED_SPI_CS_PIN)
 
 	#define OLED_CMD 	0	//写命令
 	#define OLED_DATA 	1 //写数据

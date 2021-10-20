@@ -4,9 +4,9 @@
  * @brief 	配置oled
  * @version 0.1
  * @date 2021-09-16
- * 
+ *
  * @copyright Copyright (c) 2021
- * 
+ *
  * @note
  * 	例如初始化oled引脚 刷新oled
  */
@@ -24,9 +24,9 @@ void DriverInit(void)
 {
 // ! 建议在STM32CubeMX中生成配置
 #if (TRANSFER_METHOD == HW_IIC) || (TRANSFER_METHOD == SW_IIC) || (TRANSFER_METHOD == HW_IIC_DMA)
-// I2C_Configuration();
+	I2C_Configuration();
 #elif (TRANSFER_METHOD == HW_SPI) || (TRANSFER_METHOD == SW_SPI) || (TRANSFER_METHOD == HW_SPI_DMA)
-	// SPI_Configuration(); //初始化接口
+	SPI_Configuration(); //初始化接口
 #endif
 	OLED_Init(); //初始化配置oled
 }
@@ -44,7 +44,7 @@ void UpdateTempBuffer(void)
 
 //////////////////////////////////////////////////////////
 //请将此函数放入1ms中断里，为图形提供时基
-// * 系统时间基准主要用于FrameRateUpdateScreen()中固定帧率刷新屏幕
+// * 系统时间基准主要用于 FrameRateUpdateScreen()中固定帧率刷新屏幕
 void OledTimeMsFunc(void)
 {
 	if (OledTimeMs != 0x00)
