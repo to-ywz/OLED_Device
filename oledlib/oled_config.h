@@ -13,8 +13,8 @@
 //1.HW_IIC    	硬件IIC 		支持
 //2.HW_IIC_DMA 	硬件IIC+DMA		支持
 //3.SW_IIC    	软件IIC			支持
-//4.HW_SPI		硬件SPI			不支持
-//5.HW_SPI_DMA	硬件SPI+DMA		不支持
+//4.HW_SPI		硬件SPI			支持
+//5.HW_SPI_DMA	硬件SPI+DMA		支持
 //6.SW_SPI		软件SPI			支持
 /*****************************************************************/
 #define  TRANSFER_METHOD   (HW_SPI) //如果选择了硬件驱动，请在下方选择硬件编号
